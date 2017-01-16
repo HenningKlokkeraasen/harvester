@@ -21,7 +21,7 @@ namespace Harvester
         private static async Task<bool> Run()
         {
             var selected = 0;
-            while (selected != 5)
+            while (selected != 6)
             {
                 PrintMenu();
                 var line = Console.ReadLine();
@@ -42,6 +42,9 @@ namespace Harvester
                         await ExtractDataFromMultipleFiles();
                         break;
                     case 5:
+                        RenameFiles();
+                        break;
+                    case 6:
                         Console.WriteLine("Kbai");
                         break;
                 }
@@ -56,7 +59,8 @@ namespace Harvester
             Console.WriteLine("2) Extract data");
             Console.WriteLine("3) Download multiple resources");
             Console.WriteLine("4) Extract data from multiple files");
-            Console.WriteLine("5) Exit");
+            Console.WriteLine("5) Rename files");
+            Console.WriteLine("6) Exit");
         }
 
         private static async Task DownloadResource()
@@ -119,7 +123,7 @@ namespace Harvester
 
         private static async Task ExtractDataFromMultipleFiles()
         {
-            var readPath = AskForSomethingAndGetIt("Folder to read from (e.g. C:\\temp\\files\\): ");
+            var readPath = AskForFolder;
             var savePath = AskForSomethingAndGetIt("Folder to save to (e.g. C:\\temp\\files\\output\\): ");
             var selector = AskForSelector;
             var extractions = AskForExtractions;
@@ -137,6 +141,20 @@ namespace Harvester
                 {
                     Console.WriteLine(e);
                 }
+            }
+            Console.WriteLine("Done");
+        }
+
+        private static void RenameFiles()
+        {
+            var readPath = AskForFolder;
+            var from = AskForSomethingAndGetIt("Replace from: ");
+            var to = AskForSomethingAndGetIt("Replace to: ");
+            var files = Directory.EnumerateFiles(readPath);
+            foreach (var file in files)
+            {
+                var newName = file.Replace(from, to);
+                File.Move(file, newName);
             }
             Console.WriteLine("Done");
         }
@@ -185,6 +203,8 @@ namespace Harvester
         }
 
         private static string AskForSelector => AskForSomethingAndGetIt("Html Agility Pack selector (e.g. //div[@id='div1']): ");
+
+        private static string AskForFolder => AskForSomethingAndGetIt("Folder to read from (e.g. C:\\temp\\files\\): ");
 
         private static string AskForSomethingAndGetIt(string something)
         {
